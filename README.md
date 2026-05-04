@@ -23,4 +23,4 @@ A simple full-stack bug tracking application built using Node.js, Express, and M
    npm start
 
 ## 📌 Author
-Archana
+M Archana
