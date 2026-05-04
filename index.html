@@ -1,0 +1,83 @@
+<<!DOCTYPE html>
+<html>
+<head>
+  <title>Bug Tracker</title>
+  <style>
+    body { font-family: Arial; }
+    .card { border:1px solid #ccc; margin:10px; padding:10px; }
+  </style>
+</head>
+<body>
+
+<h1>Bug Tracker 🐞</h1>
+
+<h3>Create Issue</h3>
+<input id="title" placeholder="Title"><br>
+<input id="desc" placeholder="Description"><br>
+<select id="priority">
+  <option>Low</option>
+  <option>Medium</option>
+  <option>High</option>
+</select><br>
+<button onclick="createIssue()">Create</button>
+
+<h3>Issues</h3>
+<div id="issues"></div>
+
+<script>
+const API = "http://localhost:5000";
+
+/* CREATE */
+async function createIssue(){
+  await fetch(API+"/issues",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({
+      title:document.getElementById("title").value,
+      description:document.getElementById("desc").value,
+      priority:document.getElementById("priority").value
+    })
+  });
+  loadIssues();
+}
+
+/* LOAD */
+async function loadIssues(){
+  const res = await fetch(API+"/issues");
+  const issues = await res.json();
+
+  document.getElementById("issues").innerHTML =
+    issues.map(i=>`
+      <div class="card">
+        <b>${i.title}</b><br>
+        ${i.description}<br>
+        Status: ${i.status}<br>
+        Priority: ${i.priority}<br>
+        <button onclick="updateStatus('${i._id}','In Progress')">Start</button>
+        <button onclick="updateStatus('${i._id}','Done')">Done</button>
+        <button onclick="deleteIssue('${i._id}')">Delete</button>
+      </div>
+    `).join("");
+}
+
+/* UPDATE */
+async function updateStatus(id,status){
+  await fetch(API+"/issues/"+id,{
+    method:"PUT",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({status})
+  });
+  loadIssues();
+}
+
+/* DELETE */
+async function deleteIssue(id){
+  await fetch(API+"/issues/"+id,{method:"DELETE"});
+  loadIssues();
+}
+
+loadIssues();
+</script>
+
+</body>
+</html>
