@@ -77,3 +77,17 @@ app.delete("/issues/:id", async (req,res)=>{
 });
 
 app.listen(5000, ()=>console.log("Server running on 5000"));
+// DELETE bug
+app.delete('/bugs/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        await Bug.findByIdAndDelete(id);
+        res.json({ message: "Bug deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ error: "Error deleting bug" });
+    }
+});
+app.get('/bugs', async (req, res) => {
+    const bugs = await Bug.find();
+    res.json(bugs);
+});

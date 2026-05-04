@@ -77,6 +77,34 @@ async function deleteIssue(id){
 }
 
 loadIssues();
+fetchBugs();
+
+async function fetchBugs() {
+    const res = await fetch('http://localhost:5000/bugs');
+    const bugs = await res.json();
+
+    const list = document.getElementById('bug-list');
+    list.innerHTML = '';
+
+    bugs.forEach(bug => {
+        const li = document.createElement('li');
+
+        li.innerHTML = `
+            <strong>${bug.title}</strong> - ${bug.description} (${bug.priority})
+            <button onclick="deleteBug('${bug._id}')">Delete</button>
+        `;
+    
+        list.appendChild(li);
+    });
+}
+
+async function deleteBug(id) {
+    await fetch(`http://localhost:5000/bugs/${id}`, {
+        method: 'DELETE'
+    });
+
+    fetchBugs();
+}
 </script>
 
 </body>
